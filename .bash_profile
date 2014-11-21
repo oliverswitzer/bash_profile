@@ -92,7 +92,7 @@ export VISUAL=$EDITOR
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*
 
 #git/github
-alias commands="cat ~/.bash_profile"
+alias commands="subl ~/.bash_profile"
 alias g="git status"
 alias grm="git rebase master"
 alias grc="git rebase --continue"
@@ -103,10 +103,7 @@ alias gl="git log"
 alias gd="git diff"
 alias gc="git commit"
 alias gp="git push -u origin head"
-function gpl {
-  echo "Pulling from remote: origin/$1"
-  eval "git pull origin $1"
-}
+alias gpl="git pull origin"
 
 #local db
 alias dbrebuild="rake db:drop; rake db:create; bundle exec cap -S environment=production data:load_from_prod; rake db:migrate"
@@ -122,9 +119,16 @@ alias be="bundle exec"
 alias addssh="ssh-add -D;ssh-add ~/.ssh/id_rsa"
 
 function lb_depl {
+  # First arg is server, second is branch
   echo "Deploying $2 branch to $1.littlebits.cc:"
-  eval "bundle exec cap deploy -S host=$1.littlebits.cc -S branch=$2"
+  eval "addssh; bundle exec cap deploy -S host=$1.littlebits.cc -S branch=$2"
 }
+
+function lb_depl_qa {
+  echo "Deploying qa/$1 branch to $1.littlebits.cc:"
+  eval "addssh; bundle exec cap deploy -S host=$1.littlebits.cc -S branch=qa/$1"
+}
+
 function lb_ssh {
   echo "SSH into $1.littlebits.cc"
   eval "ssh spree@$1.littlebits.cc"
