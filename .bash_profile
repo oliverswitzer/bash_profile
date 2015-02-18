@@ -9,6 +9,72 @@ complete -o default -o nospace -F _git_branch gb
 complete -o default -o nospace -F _git_checkout gco
 complete -o default -o nospace -F _git_diff gd
 
+#git/github
+alias commands="subl ~/.bash_profile"
+alias g="git status"
+alias grm="git rebase master"
+alias grc="git rebase --continue"
+alias gco="git checkout"
+alias gb="git branch"
+alias gs="git status"
+alias gl="git log"
+alias gd="git diff"
+alias gc="git commit"
+alias gp="git push -u origin head"
+alias gpl="git pull origin"
+
+#local db
+alias bedbrebuild="be rake db:drop; be rake db:create; be cap -S environment=production data:load_from_prod; be rake db:structure:dump; be rake db:migrate"
+alias zdbrebuild="zeus rake db:drop; zeus rake db:create; be cap -S environment=production data:load_from_prod; zeus rake db:structure:dump; zeus rake db:migrate"
+alias dbloadprod="bundle exec cap -S environment=production data:load_from_prod"
+
+alias l="ls -al"
+alias gh="open https://github.com/littlebitselectronics/little_bits"
+alias gdrive="open https://drive.google.com"
+alias ghis="open https://github.com/littlebitselectronics/little_bits/issues?q=assignee%3Aoliverswitzer+is%3Aopen"
+alias be="bundle exec"
+
+# sourcing .bash_profile
+alias srcb="source ~/.bash_profile"
+
+# deploying to hub-stg2
+alias addssh="ssh-add -D;ssh-add ~/.ssh/id_rsa"
+
+alias lb_syncassets="bundle exec cap s3_assets:sync"
+
+function lb_dbsyncstg {
+  echo "Syncing local db to $1.littlebits.cc:"
+  eval "bundle exec cap -S host=$1.littlebits.cc data:load_cache_into_stage"
+}
+
+function lb_depl {
+  # First arg is server, second is branch
+  echo "Deploying $2 branch to $1.littlebits.cc:"
+  eval "addssh; bundle exec cap deploy -S host=$1.littlebits.cc -S branch=$2"
+}
+
+function lb_depl_qa {
+  echo "Deploying qa/$1 branch to $1.littlebits.cc:"
+  eval "addssh; bundle exec cap deploy -S host=$1.littlebits.cc -S branch=qa/$1"
+}
+
+function lb_ssh {
+  echo "SSH into $1.littlebits.cc"
+  eval "ssh spree@$1.littlebits.cc"
+}
+function lb_restart {
+  echo "Sending restart to $1.littlebits.cc"
+  eval "bundle exec cap deploy:restart -S host=$1.littlebits.cc"
+}
+function lb_migrate {
+  echo "Migrating on $1.littlebits.cc"
+  eval "bundle exec cap deploy:migrate -S host=$1.littlebits.cc"
+}
+
+#wordpress
+alias wpclearlocal="curl -i --data 'key=unknowableunguessable' http://localhost:3000/wordpress_service/clear"
+alias wpclearstg2="curl -i --data 'key=unknowableunguessable' http://hub-stg2.littlebits.cc/wordpress_service/clear"
+
 # Automatically add completion for all aliases to commands having completion functions
 function alias_completion {
     local namespace="alias_completion"
@@ -90,58 +156,3 @@ export EDITOR="subl --wait"
 export VISUAL=$EDITOR
 
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*
-
-#git/github
-alias commands="subl ~/.bash_profile"
-alias g="git status"
-alias grm="git rebase master"
-alias grc="git rebase --continue"
-alias gco="git checkout"
-alias gb="git branch"
-alias gs="git status"
-alias gl="git log"
-alias gd="git diff"
-alias gc="git commit"
-alias gp="git push -u origin head"
-alias gpl="git pull origin"
-
-#local db
-alias dbrebuild="rake db:drop; rake db:create; bundle exec cap -S environment=production data:load_from_prod; rake db:migrate"
-alias dbsyncprod="bundle exec cap -S environment=production data:load_from_prod"
-
-alias l="ls -al"
-alias gh="open https://github.com/littlebitselectronics/little_bits"
-alias gdrive="open https://drive.google.com"
-alias ghis="open https://github.com/littlebitselectronics/little_bits/issues?q=assignee%3Aoliverswitzer+is%3Aopen"
-alias be="bundle exec"
-
-# deploying to hub-stg2
-alias addssh="ssh-add -D;ssh-add ~/.ssh/id_rsa"
-
-function lb_depl {
-  # First arg is server, second is branch
-  echo "Deploying $2 branch to $1.littlebits.cc:"
-  eval "addssh; bundle exec cap deploy -S host=$1.littlebits.cc -S branch=$2"
-}
-
-function lb_depl_qa {
-  echo "Deploying qa/$1 branch to $1.littlebits.cc:"
-  eval "addssh; bundle exec cap deploy -S host=$1.littlebits.cc -S branch=qa/$1"
-}
-
-function lb_ssh {
-  echo "SSH into $1.littlebits.cc"
-  eval "ssh spree@$1.littlebits.cc"
-}
-function lb_restart {
-  echo "Sending restart to $1.littlebits.cc"
-  eval "bundle exec cap deploy:restart -S host=$1.littlebits.cc"
-}
-function lb_migrate {
-  echo "Migrating on $1.littlebits.cc"
-  eval "bundle exec cap deploy:migrate -S host=$1.littlebits.cc"
-}
-
-#wordpress
-alias wpclearlocal="curl -i --data 'key=unknowableunguessable' http://localhost:3000/wordpress_service/clear"
-alias wpclearstg2="curl -i --data 'key=unknowableunguessable' http://hub-stg2.littlebits.cc/wordpress_service/clear"
